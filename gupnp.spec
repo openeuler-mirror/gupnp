@@ -1,13 +1,14 @@
 Name:          gupnp
-Version:       1.0.3
-Release:       2
+Version:       1.2.4
+Release:       1
 Summary:       UPnP devices & control points creation framework
 License:       LGPLv2+
 URL:           http://www.gupnp.org/
-Source0:       http://download.gnome.org/sources/%{name}/1.0/%{name}-%{version}.tar.xz
+Source0:       http://download.gnome.org/sources/%{name}/1.2/%{name}-%{version}.tar.xz
+Patch0:        CVE-2021-33516.patch
 
-BuildRequires: gssdp-devel >= 0.14.15 gtk-doc gobject-introspection-devel >= 1.36
-BuildRequires: libsoup-devel libxml2-devel libuuid-devel vala
+BuildRequires: gssdp-devel >= 1.2.3 gtk-doc gobject-introspection-devel >= 1.36
+BuildRequires: libsoup-devel libxml2-devel libuuid-devel vala meson
 Requires:      dbus
 
 %description
@@ -34,20 +35,20 @@ Obsoletes:     %{name}-docs < %{version}-%{release}
 This package contains help file and developer documentation for gupnp.
 
 %prep
-%setup -q
-# Use Python3 rather than Python2
-sed -i '1s|^#! /usr/bin/env python$|#!/usr/bin/python3|' tools/gupnp-binding-tool
+%autosetup -n %{name}-%{version} -p1
 
 %build
-%configure --disable-static --with-context-manager=network-manager
-%make_build V=1
+%meson \
+  -Dcontext_manager=network-manager \
+  -Dgtk_doc=true
+%meson_build
 
 %install
-%make_install
+%meson_install
 %delete_la
 
 %check
-make check %{?_smp_mflags} V=1
+%meson_test
 
 %post -p /sbin/ldconfig
 
@@ -56,21 +57,29 @@ make check %{?_smp_mflags} V=1
 %files
 %license COPYING
 %doc AUTHORS
-%{_libdir}/libgupnp-1.0.so.*
-%{_libdir}/girepository-1.0/GUPnP-1.0.typelib
+%{_libdir}/libgupnp-1.2.so.*
+%{_libdir}/girepository-1.0/GUPnP-1.2.typelib
 
 %files         devel
-%{_bindir}/gupnp-binding-tool
-%{_libdir}/pkgconfig/gupnp-1.0.pc
-%{_libdir}/libgupnp-1.0.so
-%{_includedir}/gupnp-1.0
-%{_datadir}/gir-1.0/GUPnP-1.0.gir
+%{_bindir}/gupnp-binding-tool-1.2
+%{_libdir}/pkgconfig/gupnp-1.2.pc
+%{_libdir}/libgupnp-1.2.so
+%{_includedir}/gupnp-1.2
+%{_datadir}/gir-1.0/GUPnP-1.2.gir
 %{_datadir}/vala/vapi/gupnp*
 
 %files         help
 %doc README
 %doc %{_datadir}/gtk-doc/html/gupnp
+%{_mandir}/man1/gupnp-binding-tool-*
 
 %changelog
+* Mon Jun 7 2021 weijin deng <weijin.deng@turbolinux.com.cn> - 1.2.4-1
+- Upgrade to 1.2.4
+- Update Version, Release, Source0, BuildRequires
+- Delete sed operation which existed in this version
+- Add patch for fix CVE-2021-33516
+- Update stage 'prep', 'build', 'install', 'check', 'files'
+
 * Fri Oct 25 2019 Alex Chao <zhaolei746@huawei.com> - 1.0.3-2
 - Package init
