@@ -1,13 +1,13 @@
 Name:          gupnp
 Version:       1.2.4
-Release:       1
+Release:       2
 Summary:       UPnP devices & control points creation framework
 License:       LGPLv2+
 URL:           http://www.gupnp.org/
 Source0:       http://download.gnome.org/sources/%{name}/1.2/%{name}-%{version}.tar.xz
 Patch0:        CVE-2021-33516.patch
 
-BuildRequires: gssdp-devel >= 1.2.3 gtk-doc gobject-introspection-devel >= 1.36
+BuildRequires: gssdp-devel >= 1.2.3 gtk-doc gobject-introspection-devel >= 1.36 glib2-devel >= 2.66
 BuildRequires: libsoup-devel libxml2-devel libuuid-devel vala meson
 Requires:      dbus
 
@@ -74,6 +74,9 @@ This package contains help file and developer documentation for gupnp.
 %{_mandir}/man1/gupnp-binding-tool-*
 
 %changelog
+* Wed Jul 14 2021 Wenlong Ding <wenlong.ding@turbolinux.com.cn> - 1.2.4-2
+- Add missing BuildRequires version: glib2-devel >= 2.66
+
 * Mon Jun 7 2021 weijin deng <weijin.deng@turbolinux.com.cn> - 1.2.4-1
 - Upgrade to 1.2.4
 - Update Version, Release, Source0, BuildRequires
